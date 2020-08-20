@@ -22,6 +22,9 @@ export function getShape() {
 export function appendImages(nodes) {
   const image = nodes.filter(d => d.height === 0)
   const imageGroup = image.append('g').classed('image', true);
+  const imageUrl = Math.round(Math.random()) === 1
+    ? 'https://www.buytshirtdesigns.net/wp-content/uploads/2020/03/CoronaVirus-Awareness-800x662.jpg'
+    : 'https://www.rushordertees.com/design/ZoomImage.php?src=4316992_f&style=3931&colorCode=37&x=240&y=300&width=880&height=880&scale=1.7&watermark=false'
 
   imageGroup
     .append('clipPath')
@@ -60,12 +63,16 @@ export function appendImages(nodes) {
           });
 
       }
-      image.src = 'https://www.buytshirtdesigns.net/wp-content/uploads/2020/03/CoronaVirus-Awareness-800x662.jpg';
+      image.src = i % 2 === 0
+        ? 'https://www.buytshirtdesigns.net/wp-content/uploads/2020/03/CoronaVirus-Awareness-800x662.jpg'
+        : 'https://www.rushordertees.com/design/ZoomImage.php?src=4316992_f&style=3931&colorCode=37&x=240&y=300&width=880&height=880&scale=1.7&watermark=false'
     })
     .attr('clip-path', d => `url(#${d.id}-clip)`)
     .attr("transform", d => `translate(${d.polyProps.bounds[0]})`)
     .attr("visibility", "visible")
-    .attr("href", 'https://www.buytshirtdesigns.net/wp-content/uploads/2020/03/CoronaVirus-Awareness-800x662.jpg');
+    .attr("href", (d, i) => image.src = i % 2 === 0
+      ? 'https://www.buytshirtdesigns.net/wp-content/uploads/2020/03/CoronaVirus-Awareness-800x662.jpg'
+      : 'https://www.rushordertees.com/design/ZoomImage.php?src=4316992_f&style=3931&colorCode=37&x=240&y=300&width=880&height=880&scale=1.7&watermark=false');
 }
 
 
