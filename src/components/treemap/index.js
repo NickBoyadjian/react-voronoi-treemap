@@ -4,30 +4,12 @@ import { voronoiTreemap } from 'd3-voronoi-treemap';
 import seedrandom from 'seedrandom';
 import csvdata from './data.csv';
 import randomHexColor from 'random-hex-color';
-import { coordinatePolygons } from './helpers';
+import { getDataNested, getShape, appendImages } from './helpers';
 
 export default function Index() {
   const svgRef = useRef();
   const [csvData, setCsvData] = useState([]);
 
-  function getShape() {
-    return range(100).map(i => {
-      const rad = 0 + i / 100 * 2 * Math.PI;
-      return [
-        500 / 2 + 500 / 2 * Math.cos(rad),
-        500 / 2 + 500 / 2 * Math.sin(rad)]
-    })
-  }
-
-  function getDataNested(data) {
-    let freedom_nest = nest()
-      .key(d => d.Region)
-      .key(d => d.Country)
-      .rollup(v => sum(v, d => +d.C02))
-      .entries(data);
-
-    return { key: 'nested_group', values: freedom_nest }
-  }
 
 
   useEffect(() => {
@@ -37,7 +19,7 @@ export default function Index() {
 
       // set up basic variables
       const svg = select(svgRef.current);
-      const voronoi = svg.append('g');
+      const voronoi = svg.append('g').classed('voronoi', true);
       const labels = svg.append('g');
       let voronoiTreeMap = voronoiTreemap().prng(new seedrandom('ok')).clip(getShape());
       let data = [];
@@ -81,22 +63,28 @@ export default function Index() {
 
         console.log(nodes)
 
-        voronoi.selectAll('.node')
+        const selection = voronoi.selectAll('.node')
           .data(nodes)
-          .join('polygon')
-          .classed('.node', true)
+          .join('g')
+          .classed('node', true)
+          .append('polygon')
           .attr('points', d => d.polygon)
-          .attr('stroke', '#555555')
+          .attr('stroke', d => d.depth === 0 ? '#eee' : '#fff')
           .attr('stroke-opacity', 1)
           .attr('stroke-width', 0)
           .attr('stroke-linejoin', 'round')
-          .attr('fill-opacity', d => d.depth === 2 ? 1 : 0)
-          .attr('fill', _ => randomHexColor())
+          .attr('fill-opacity', d => d.depth === 2 ? 0.5 : 0)
+          .attr('fill', "#252525")
           .attr('pointer-events', d => d.height === 0 ? 'fill' : 'none')
+          .attr("stroke-width", d => 7 - d.depth * 2.8)
           .on('mouseenter', function (d) {
-            console.log(d)
+            select(this).attr('fill-opacity', 0.2)
           })
-          .attr("stroke-width", d => 7 - d.depth * 2.8);
+          .on('mouseleave', function (d) {
+            select(this).attr('fill-opacity', 0.5);
+          })
+
+        appendImages(voronoi.selectAll('.node'))
       })
     }
 
