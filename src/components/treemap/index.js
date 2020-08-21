@@ -9,6 +9,8 @@ import { getDataNested, getShape, appendImages } from './helpers';
 export default function Index() {
   const svgRef = useRef();
   const [csvData, setCsvData] = useState([]);
+  const width = window.innerWidth;
+  const height = 500;
 
 
 
@@ -21,7 +23,8 @@ export default function Index() {
       const svg = select(svgRef.current);
       const voronoi = svg.append('g').classed('voronoi', true);
       const labels = svg.append('g');
-      let voronoiTreeMap = voronoiTreemap().prng(new seedrandom('ok')).clip(getShape());
+      const clipPath = [[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]];
+      let voronoiTreeMap = voronoiTreemap().prng(new seedrandom('ok')).clip(clipPath);
       let data = [];
 
 
@@ -61,7 +64,6 @@ export default function Index() {
           .sort((a, b) => b.depth - a.depth)
           .map((d, i) => Object.assign({}, d, { id: i }));
 
-        console.log(nodes)
 
         const selection = voronoi.selectAll('.node')
           .data(nodes)
@@ -95,7 +97,7 @@ export default function Index() {
 
   return (
     <div>
-      <svg ref={svgRef} width={500} height={500} />
+      <svg ref={svgRef} width={window.innerWidth} height={500} />
     </div>
   )
 }

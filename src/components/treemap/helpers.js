@@ -59,7 +59,10 @@ export function appendImages(nodes) {
           .attr('height', height)
           .attr('visibility', 'visible')
           .on('mouseenter', function (d) {
-            console.log(d)
+            select(this).attr('opacity', 0.5)
+          })
+          .on('mouseleave', function (d) {
+            select(this).attr('opacity', 1)
           });
 
       }
